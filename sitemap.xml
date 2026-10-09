@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://example.com/</loc></url>
-  <url><loc>https://example.com/about.html</loc></url>
-  <url><loc>https://example.com/services.html</loc></url>
-  <url><loc>https://example.com/portfolio.html</loc></url>
-  <url><loc>https://example.com/insights.html</loc></url>
-  <url><loc>https://example.com/contact.html</loc></url>
-  <url><loc>https://example.com/quote.html</loc></url>
+  <url><loc>https://mustaf2007.github.io/qii-one-website/</loc></url>
+  <url><loc>https://mustaf2007.github.io/qii-one-website/about.html</loc></url>
+  <url><loc>https://mustaf2007.github.io/qii-one-website/services.html</loc></url>
+  <url><loc>https://mustaf2007.github.io/qii-one-website/portfolio.html</loc></url>
+  <url><loc>https://mustaf2007.github.io/qii-one-website/insights.html</loc></url>
+  <url><loc>https://mustaf2007.github.io/qii-one-website/contact.html</loc></url>
+  <url><loc>https://mustaf2007.github.io/qii-one-website/quote.html</loc></url>
+  <url><loc>https://mustaf2007.github.io/qii-one-website/privacy.html</loc></url>
+  <url><loc>https://mustaf2007.github.io/qii-one-website/terms.html</loc></url>
 </urlset>
