@@ -108,6 +108,33 @@ p { margin: 0 0 16px; }
 [dir="rtl"] body { text-align: right; }
 [dir="rtl"] .workflow .card:before { right: auto; left: 18px; }
 
+.faq-list { display: grid; gap: 14px; }
+.faq-item { background: white; border: 1px solid var(--line); border-radius: var(--radius); padding: 4px 22px; box-shadow: 0 10px 30px rgba(8,38,74,.06); transition: box-shadow .2s ease; }
+.faq-item:hover { box-shadow: var(--shadow); }
+.faq-item summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px 0; font-weight: 800; color: var(--navy); font-size: 18px; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary:after { content: "+"; flex: none; width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; background: #eaf4ff; color: var(--blue); font-size: 20px; font-weight: 700; transition: transform .2s ease, background .2s ease; }
+.faq-item[open] summary:after { content: "\2013"; background: var(--blue); color: white; }
+.faq-item summary:focus-visible { outline: 3px solid var(--blue-2); outline-offset: 2px; border-radius: 12px; }
+.faq-body { padding: 0 0 20px; color: var(--muted); max-width: 780px; }
+.faq-body p:last-child { margin-bottom: 0; }
+.faq-cta { margin-top: 26px; }
+
+.install-banner { position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 200; margin: 0 auto; width: min(560px, calc(100% - 32px)); display: flex; align-items: center; gap: 16px; background: var(--navy); color: white; border: 1px solid rgba(255,255,255,.14); border-radius: 20px; padding: 14px 16px; box-shadow: 0 22px 55px rgba(8,38,74,.4); }
+.install-banner img { width: 44px; height: 44px; border-radius: 12px; flex: none; }
+.install-banner p { margin: 0; font-size: 14px; line-height: 1.4; }
+.install-banner strong { display: block; font-size: 15px; }
+.install-banner .btn { padding: 9px 14px; font-size: 14px; flex: none; }
+.install-banner .install-dismiss { background: transparent; border: 1px solid rgba(255,255,255,.3); color: white; flex: none; }
+.install-banner[hidden] { display: none; }
+
+@media (max-width: 560px) {
+  .faq-item { padding: 2px 16px; }
+  .faq-item summary { font-size: 16px; }
+  .install-banner { flex-wrap: wrap; }
+  .install-banner .btn { flex: 1; }
+}
+
 @media (max-width: 920px) {
   .menu-toggle { display: inline-flex; }
   .nav-links { position: absolute; inset: 74px 16px auto 16px; display: none; flex-direction: column; align-items: stretch; background: white; border: 1px solid var(--line); border-radius: 20px; padding: 18px; box-shadow: var(--shadow); }

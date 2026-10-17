@@ -41,3 +41,67 @@ document.querySelectorAll('[data-static-form]').forEach((form) => {
     }
   });
 });
+
+// --- PWA: service worker registration -------------------------------------
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js')
+      .catch((error) => {
+        console.warn('Service worker registration failed:', error);
+      });
+  });
+}
+
+// --- PWA: install prompt banner -------------------------------------------
+(() => {
+  const STORAGE_KEY = 'qii-install-dismissed';
+  const standaloneQuery = '(display-mode: standalone), (display-mode: window-controls-overlay)';
+
+  // Already running as an installed app: nothing to prompt.
+  if (window.matchMedia(standaloneQuery).matches || navigator.standalone) return;
+
+  let deferredPrompt = null;
+  const banner = document.createElement('div');
+  banner.className = 'install-banner';
+  banner.hidden = true;
+  banner.setAttribute('role', 'region');
+  banner.setAttribute('aria-label', 'Install QII One app');
+  banner.innerHTML = '<img src="icon-192.png" alt="" aria-hidden="true">' +
+    '<p><strong>Install QII One</strong>Add the app to your home screen for faster access and offline reading.</p>' +
+    '<button type="button" class="btn btn-accent" data-install>Install</button>' +
+    '<button type="button" class="btn install-dismiss" data-install-dismiss aria-label="Dismiss install prompt">Not now</button>';
+  document.body.appendChild(banner);
+
+  const dismiss = (persist) => {
+    banner.hidden = true;
+    if (persist) {
+      try { localStorage.setItem(STORAGE_KEY, '1'); } catch (error) { /* storage unavailable */ }
+    }
+  };
+
+  const alreadyDismissed = () => {
+    try { return localStorage.getItem(STORAGE_KEY) === '1'; } catch (error) { return false; }
+  };
+
+  banner.querySelector('[data-install]').addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    try { await deferredPrompt.userChoice; } catch (error) { /* no-op */ }
+    deferredPrompt = null;
+    dismiss(false);
+  });
+
+  banner.querySelector('[data-install-dismiss]').addEventListener('click', () => dismiss(true));
+
+  window.addEventListener('beforeinstallprompt', (event) => {
+    // Chrome/Android and desktop Chromium.
+    event.preventDefault();
+    deferredPrompt = event;
+    if (!alreadyDismissed()) banner.hidden = false;
+  });
+
+  window.addEventListener('appinstalled', () => {
+    deferredPrompt = null;
+    dismiss(false);
+  });
+})();
