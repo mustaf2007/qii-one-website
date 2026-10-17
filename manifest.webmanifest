@@ -1,0 +1,62 @@
+{
+  "name": "QII One — Turning Data Into Insight",
+  "short_name": "QII One",
+  "description": "Digital research, data analytics, dashboards, GIS, reporting, translation, and technology services from Somalia for international clients.",
+  "id": "./",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "browser"],
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#08264a",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["business", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Request a Quote",
+      "short_name": "Quote",
+      "url": "./quote.html",
+      "description": "Start a project with QII One."
+    },
+    {
+      "name": "Services",
+      "short_name": "Services",
+      "url": "./services.html",
+      "description": "Browse research and analytics services."
+    },
+    {
+      "name": "Frequently Asked Questions",
+      "short_name": "FAQ",
+      "url": "./faq.html",
+      "description": "Answers to common questions."
+    }
+  ]
+}
