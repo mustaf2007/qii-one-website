@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="so" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WarbaahinAI — Multilingual News Intelligence Platform for Somalia</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brandDark: '#070d19',
+                        cardDark: '#0f172a',
+                        somaliBlue: '#2563eb',
+                        goldAccent: '#f59e0b'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #070d19; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 9999px; }
+        .article-card { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        .article-card:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-blue-600 selection:text-white">
+
+    <!-- Top Header & Navigation Bar -->
+    <header class="border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md sticky top-0 z-50 px-4 lg:px-8 py-3.5 flex items-center justify-between">
+        <div class="flex items-center space-x-3.5 cursor-pointer" onclick="filterCategory('all')">
+            <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-blue-600 via-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/25">
+                <i class="fa-solid fa-newspaper text-lg"></i>
+            </div>
+            <div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-xl font-extrabold tracking-tight text-white">Warbaahin<span class="text-sky-400">AI</span></span>
+                    <span class="px-2 py-0.5 text-[10px] font-mono font-bold bg-sky-500/10 text-sky-400 rounded-full border border-sky-500/20 uppercase tracking-wider">Somalia Intelligence</span>
+                </div>
+                <p class="text-[10px] text-slate-400 font-medium hidden sm:block">AI-Powered Multilingual News & Fact Verification Engine</p>
+            </div>
+        </div>
+
+        <!-- Language Selector & Daily Briefing Controls -->
+        <div class="flex items-center space-x-3">
+            <!-- Language Switcher -->
+            <div class="bg-slate-950 border border-slate-800 rounded-xl p-1 flex items-center text-xs font-bold">
+                <button onclick="setGlobalLanguage('so')" id="lang-btn-so" class="px-2.5 py-1 rounded-lg bg-sky-600 text-white shadow transition-all">SO</button>
+                <button onclick="setGlobalLanguage('en')" id="lang-btn-en" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all">EN</button>
+                <button onclick="setGlobalLanguage('ar')" id="lang-btn-ar" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all">AR</button>
+            </div>
+
+            <!-- AI Executive Daily Briefing Trigger -->
+            <button onclick="openBriefingModal()" class="flex items-center space-x-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold px-3.5 py-2 rounded-xl text-xs shadow-lg shadow-amber-500/20 transition-all">
+                <i class="fa-solid fa-brain"></i>
+                <span class="hidden sm:inline">Daily AI Briefing</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace Container -->
+    <div class="flex-1 flex overflow-hidden">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="w-16 lg:w-64 border-r border-slate-800/80 bg-slate-900/40 flex flex-col justify-between py-6 px-2 lg:px-4">
+            <div class="space-y-6">
+                <!-- Category Navigation -->
+                <nav class="space-y-1.5">
+                    <button onclick="filterCategory('all')" id="cat-nav-all" class="cat-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-sky-500/10 text-sky-400 border border-sky-500/20 transition-all">
+                        <i class="fa-solid fa-globe w-5 text-center text-sm"></i>
+                        <span class="hidden lg:inline">All Intelligence</span>
+                    </button>
+                    <button onclick="filterCategory('politics')" id="cat-nav-politics" class="cat-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition-all">
+                        <i class="fa-solid fa-landmark w-5 text-center text-sm"></i>
+                        <span class="hidden lg:inline">Politics & Governance</span>
+                    </button>
+                    <button onclick="filterCategory('economics')" id="cat-nav-economics" class="cat-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition-all">
+                        <i class="fa-solid fa-chart-line w-5 text-center text-sm"></i>
+                        <span class="hidden lg:inline">Economics & Business</span>
+                    </button>
+                    <button onclick="filterCategory('security')" id="cat-nav-security" class="cat-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition-all">
+                        <i class="fa-solid fa-shield-halved w-5 text-center text-sm"></i>
+                        <span class="hidden lg:inline">Security & Defense</span>
+                    </button>
+                    <button onclick="filterCategory('development')" id="cat-nav-development" class="cat-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition-all">
+                        <i class="fa-solid fa-seedling w-5 text-center text-sm"></i>
+                        <span class="hidden lg:inline">Development & Climate</span>
+                    </button>
+                    <button onclick="filterCategory('tech')" id="cat-nav-tech" class="cat-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition-all">
+                        <i class="fa-solid fa-microchip w-5 text-center text-sm"></i>
+                        <span class="hidden lg:inline">Tech & Innovation</span>
+                    </button>
+                </nav>
+
+                <hr class="border-slate-800">
+
+                <!-- Regional Filters -->
+                <div class="hidden lg:block space-y-2">
+                    <span class="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest px-3">Regional Focus</span>
+                    <div class="space-y-1">
+                        <button onclick="filterRegion('all')" id="reg-nav-all" class="reg-btn w-full text-left px-3.5 py-1.5 text-xs text-sky-400 font-bold rounded-lg bg-slate-800/60">All Regions</button>
+                        <button onclick="filterRegion('banadir')" id="reg-nav-banadir" class="reg-btn w-full text-left px-3.5 py-1.5 text-xs text-slate-400 font-medium hover:text-white rounded-lg hover:bg-slate-800/40">Mogadishu / Banadir</button>
+                        <button onclick="filterRegion('southwest')" id="reg-nav-southwest" class="reg-btn w-full text-left px-3.5 py-1.5 text-xs text-slate-400 font-medium hover:text-white rounded-lg hover:bg-slate-800/40">South West State</button>
+                        <button onclick="filterRegion('jubaland')" id="reg-nav-jubaland" class="reg-btn w-full text-left px-3.5 py-1.5 text-xs text-slate-400 font-medium hover:text-white rounded-lg hover:bg-slate-800/40">Jubaland</button>
+                        <button onclick="filterRegion('puntland')" id="reg-nav-puntland" class="reg-btn w-full text-left px-3.5 py-1.5 text-xs text-slate-400 font-medium hover:text-white rounded-lg hover:bg-slate-800/40">Puntland</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bookmarks Counter -->
+            <div class="hidden lg:block bg-slate-900/80 border border-slate-800 rounded-2xl p-4 text-xs space-y-2">
+                <div class="flex items-center justify-between text-slate-300 font-bold">
+                    <span>Saved Bookmarks</span>
+                    <span id="bookmark-count-badge" class="bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded-md font-mono">0</span>
+                </div>
+                <p class="text-[11px] text-slate-400 leading-relaxed">Bookmarked intelligence articles are cached locally for quick access.</p>
+            </div>
+        </aside>
+
+        <!-- Main Stream & Intelligence Dashboard -->
+        <main class="flex-1 overflow-y-auto custom-scrollbar p-4 lg:p-8 space-y-6 bg-slate-950">
+            
+            <!-- Top Search & Trending Tags Bar -->
+            <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+                <!-- Search Bar -->
+                <div class="relative flex-1">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                    <input type="text" id="news-search-input" onkeyup="handleSearch()" placeholder="Search Somalia intelligence, key policies, topics..." class="w-full bg-slate-900/90 border border-slate-800 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-colors">
+                </div>
+
+                <!-- Trending Topic Tags -->
+                <div class="flex items-center space-x-2 overflow-x-auto pb-1 md:pb-0 text-xs custom-scrollbar">
+                    <span class="text-slate-500 font-mono text-[10px] font-bold uppercase shrink-0">Trending:</span>
+                    <button onclick="searchTag('CentralBank')" class="bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 px-2.5 py-1 rounded-lg shrink-0 transition">#CentralBank</button>
+                    <button onclick="searchTag('Remittances')" class="bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 px-2.5 py-1 rounded-lg shrink-0 transition">#Remittances</button>
+                    <button onclick="searchTag('PortInfrastructure')" class="bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 px-2.5 py-1 rounded-lg shrink-0 transition">#PortInfrastructure</button>
+                    <button onclick="searchTag('Agriculture')" class="bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 px-2.5 py-1 rounded-lg shrink-0 transition">#Agriculture</button>
+                </div>
+            </div>
+
+            <!-- Metrics Overview Cards -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4 space-y-1 shadow-lg">
+                    <span class="text-[10px] font-mono font-bold text-slate-500 uppercase">Monitored Sources</span>
+                    <div class="text-lg font-black text-white flex items-center justify-between">
+                        <span>34 Verified</span>
+                        <i class="fa-solid fa-tower-broadcast text-sky-400 text-base"></i>
+                    </div>
+                </div>
+                <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4 space-y-1 shadow-lg">
+                    <span class="text-[10px] font-mono font-bold text-slate-500 uppercase">Fact-Check Index</span>
+                    <div class="text-lg font-black text-emerald-400 flex items-center justify-between">
+                        <span>98.4% Average</span>
+                        <i class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+                    </div>
+                </div>
+                <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4 space-y-1 shadow-lg">
+                    <span class="text-[10px] font-mono font-bold text-slate-500 uppercase">Deduplication Engine</span>
+                    <div class="text-lg font-black text-amber-400 flex items-center justify-between">
+                        <span>0 Duplicates</span>
+                        <i class="fa-solid fa-copy text-amber-400 text-base"></i>
+                    </div>
+                </div>
+                <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4 space-y-1 shadow-lg">
+                    <span class="text-[10px] font-mono font-bold text-slate-500 uppercase">AI Processing Latency</span>
+                    <div class="text-lg font-black text-indigo-400 flex items-center justify-between">
+                        <span>Real-time</span>
+                        <i class="fa-solid fa-bolt text-indigo-400 text-base"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Articles Feed Container -->
+            <div id="articles-feed-container" class="space-y-4">
+                <!-- Articles dynamically generated via JS -->
+            </div>
+        </main>
+    </div>
+
+    <!-- AI Executive Daily Briefing Modal -->
+    <div id="briefing-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div class="flex items-center space-x-3">
+                    <div class="h-10 w-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-extrabold text-white">Somalia Daily AI Executive Digest</h3>
+                        <p class="text-xs text-slate-400 font-mono" id="briefing-date">Synthesized Intelligence Briefing</p>
+                    </div>
+                </div>
+                <button onclick="closeBriefingModal()" class="text-slate-400 hover:text-white p-2"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <div class="space-y-4 text-xs leading-relaxed text-slate-300 custom-scrollbar max-h-96 overflow-y-auto pr-2" id="briefing-content">
+                <div class="p-4 bg-slate-950 border border-slate-800 rounded-2xl space-y-2">
+                    <span class="text-amber-400 font-bold uppercase tracking-wider text-[10px] flex items-center space-x-1.5">
+                        <i class="fa-solid fa-building-columns"></i>
+                        <span>Macro-Financial & Financial Tech</span>
+                    </span>
+                    <p class="text-slate-300">The Central Bank of Somalia has advanced regulatory frameworks governing mobile financial services and cross-border remittance corridors, boosting institutional confidence for East African trade integrations.</p>
+                </div>
+
+                <div class="p-4 bg-slate-950 border border-slate-800 rounded-2xl space-y-2">
+                    <span class="text-sky-400 font-bold uppercase tracking-wider text-[10px] flex items-center space-x-1.5">
+                        <i class="fa-solid fa-wheat-awn"></i>
+                        <span>Infrastructure & Agriculture</span>
+                    </span>
+                    <p class="text-slate-300">Substantial agricultural investments in South West State continue to scale grain production resilience, mitigating historical climate shocks in regional riverine farming zones.</p>
+                </div>
+
+                <div class="p-4 bg-slate-950 border border-slate-800 rounded-2xl space-y-2">
+                    <span class="text-indigo-400 font-bold uppercase tracking-wider text-[10px] flex items-center space-x-1.5">
+                        <i class="fa-solid fa-microchip"></i>
+                        <span>Innovation & Digital Ecosystems</span>
+                    </span>
+                    <p class="text-slate-300">Somali tech engineers in Mogadishu deployed localized natural language AI platforms to support automated translation and financial compliance auditing across public and private sectors.</p>
+                </div>
+            </div>
+
+            <div class="pt-2 flex justify-end">
+                <button onclick="closeBriefingModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-5 py-2.5 rounded-xl text-xs font-bold transition">Close Briefing</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Data Repository & Core Logic -->
+    <script>
+        // Multilingual Article Database
+        const newsDatabase = [
+            {
+                id: "art-101",
+                category: "economics",
+                region: "banadir",
+                title: {
+                    so: "Banka Dhexe ee Soomaaliya oo Soo Bandhigay Qaab-dhismeedka Cusub ee Xawaaladaha iyo Maaliyadaha",
+                    en: "Central Bank of Somalia Introduces Updated Governance Framework for Remittances and Financial Tech",
+                    ar: "البنك المركزي الصومالي يطلق إطاراً تنظيمياً جديداً لشركات التحويلات المالية والتقنية"
+                },
+                source: "SONNA (Somali National News Agency)",
+                timestamp: "10 mins ago",
+                factCheckScore: "99%",
+                sentiment: "Positive Policy",
+                summary: {
+                    so: "Banka Dhexe ee Soomaaliya ayaa shaaciyay nidaam cusub oo lagu xoojinayo nidaamka xawaaladaha, hufnaanta maaliyadda, iyo isku-xirka bangiyada caalamiga ah.",
+                    en: "The Central Bank of Somalia has unveiled a new regulatory framework designed to enhance transparency in national remittance pipelines and integrate local banks with global financial rails.",
+                    ar: "أعلن البنك المركزي الصومالي عن إطار تنظيمي حديث يهدف إلى تعزيز الشفافية في قنوات التحويلات المالية ودمج البنوك المحلية مع الشبكات المالية العالمية."
+                },
+                keyPoints: [
+                    "Enhanced compliance with international Anti-Money Laundering (AML) standards.",
+                    "Direct support for digital mobile money interoperability across regional hubs.",
+                    "Strengthened diaspora remittance channels supporting Horn of Africa development."
+                ]
+            },
+            {
+                id: "art-102",
+                category: "development",
+                region: "southwest",
+                title: {
+                    so: "Wasaaradda Beeraha oo Baahisay Mashruuca Modernization-ka ee Webiga Shabelle",
+                    en: "Ministry of Agriculture Launches Agricultural Modernization & Irrigation Project along Shabelle River",
+                    ar: "وزارة الزراعة تطلق مشروع التحديث الزراعي والري على طول نهر شبيلي"
+                },
+                source: "Hiiraan Online Intelligence",
+                timestamp: "45 mins ago",
+                factCheckScore: "97%",
+                sentiment: "High Development Impact",
+                summary: {
+                    so: "Mashruuc cusub oo lagaga hortagayo abaaraha iyo fatahaadaha ayaa laga bilaabay koonfurta Soomaaliya, si loo kordhiyo wax-soosaarka gobolka.",
+                    en: "A strategic climate-resilience agricultural project has commenced in South West State targeting sustainable food security, drip irrigation, and harvest retention.",
+                    ar: "بدأ مشروع استراتيجي للتكيف مع المناخ والزراعة في ولاية جنوب الغرب يهدف إلى تحقيق الأمن الغذائي واستدامة الري بالتقسيط."
+                },
+                keyPoints: [
+                    "Installation of modernized water retention barriers along the Shabelle river.",
+                    "Provision of high-yield drought-resistant crop seeds to local farming cooperatives.",
+                    "Targeted yield growth of 35% for regional cereal production."
+                ]
+            },
+            {
+                id: "art-103",
+                category: "tech",
+                region: "banadir",
+                title: {
+                    so: "Dhallinyarada Soomaaliyeed oo Dejiyay Platform-yo AI ah oo ku Shaqeeya Luuqadda Soomaaliga",
+                    en: "Somali Tech Innovators Launch Localized Natural Language AI Platforms",
+                    ar: "مبتكرون صوماليون يطلقون منصات ذكاء اصطناعي مخصصة للغة الصومالية"
+                },
+                source: "Tech Somalia Review",
+                timestamp: "2 hours ago",
+                factCheckScore: "96%",
+                sentiment: "Innovative Trend",
+                summary: {
+                    so: "Aqoonyahanno iyo engineers Soomaaliyeed ayaa sameeyay aalado AI oo si toos ah u fahmaya una tarjumaya af-Soomaaliga.",
+                    en: "Software engineers in Mogadishu have deployed state-of-the-art natural language processing models focused on Somali translation and dataset analytics.",
+                    ar: "قام مهندسو برمجيات في مقديشو بتطوير نماذج معالجة اللغة الطبيعية المخصصة للترجمة والتحليلات باللغة الصومالية."
+                },
+                keyPoints: [
+                    "Open-source Somali language datasets compiled for academic and economic research.",
+                    "Integration with local fintech mobile applications for voice command processing.",
+                    "Supported by regional technology accelerators and university labs."
+                ]
+            },
+            {
+                id: "art-104",
+                category: "politics",
+                region: "puntland",
+                title: {
+                    so: "Shirka Iskaashiga Gobollada iyo Horumarinta Dhaqaalaha oo ka Furmay Garowe",
+                    en: "Regional Partnership & Economic Development Summit Opens in Garowe",
+                    ar: "قمة الشراكة الإقليمية والتنمية الاقتصادية تفتتح أعمالها في غاروي"
+                },
+                source: "Bloomberg Africa / Puntland Mirror",
+                timestamp: "3 hours ago",
+                factCheckScore: "98%",
+                sentiment: "Policy Collaboration",
+                summary: {
+                    so: "Hoggaamiyeyaal iyo khabiiro dhaqaale ayaa isugu yimid Garowe si ay uga wada hadlaan maalgashiga dekadaha iyo kabayaasha dhaqaalaha.",
+                    en: "Political leaders and financial analysts gathered in Garowe to discuss regional port expansion, customs harmonisation, and private sector investment.",
+                    ar: "اجتمع القادة السياسيون والمحللون الماليون في غاروي لمناقشة توسعة الموانئ الإقليمية وتوحيد التعرفة الجمركية واستثمارات القطاع الخاص."
+                },
+                keyPoints: [
+                    "Evaluation of trade corridors linking Garowe, Bosaso, and regional markets.",
+                    "Public-Private Partnerships (PPP) established for renewable energy grid expansion.",
+                    "Joint fiscal oversight frameworks drafted for regional development projects."
+                ]
+            }
+        ];
+
+        let currentLang = 'so';
+        let currentCategory = 'all';
+        let currentRegion = 'all';
+        let bookmarks = new Set();
+
+        function setGlobalLanguage(lang) {
+            currentLang = lang;
+            ['so', 'en', 'ar'].forEach(l => {
+                const btn = document.getElementById(`lang-btn-${l}`);
+                if (l === lang) {
+                    btn.className = "px-2.5 py-1 rounded-lg bg-sky-600 text-white shadow transition-all";
+                } else {
+                    btn.className = "px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all";
+                }
+            });
+            renderArticles();
+        }
+
+        function filterCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.className = "cat-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition-all";
+            });
+            const activeNav = document.getElementById(`cat-nav-${cat}`);
+            if (activeNav) {
+                activeNav.className = "cat-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-sky-500/10 text-sky-400 border border-sky-500/20 transition-all";
+            }
+            renderArticles();
+        }
+
+        function filterRegion(reg) {
+            currentRegion = reg;
+            document.querySelectorAll('.reg-btn').forEach(btn => {
+                btn.className = "reg-btn w-full text-left px-3.5 py-1.5 text-xs text-slate-400 font-medium hover:text-white rounded-lg hover:bg-slate-800/40";
+            });
+            const activeReg = document.getElementById(`reg-nav-${reg}`);
+            if (activeReg) {
+                activeReg.className = "reg-btn w-full text-left px-3.5 py-1.5 text-xs text-sky-400 font-bold rounded-lg bg-slate-800/60";
+            }
+            renderArticles();
+        }
+
+        function toggleBookmark(artId) {
+            if (bookmarks.has(artId)) {
+                bookmarks.delete(artId);
+            } else {
+                bookmarks.add(artId);
+            }
+            document.getElementById('bookmark-count-badge').innerText = bookmarks.size;
+            renderArticles();
+        }
+
+        function renderArticles() {
+            const container = document.getElementById('articles-feed-container');
+            const searchVal = document.getElementById('news-search-input').value.toLowerCase();
+
+            const filtered = newsDatabase.filter(art => {
+                const matchesCat = (currentCategory === 'all' || art.category === currentCategory);
+                const matchesReg = (currentRegion === 'all' || art.region === currentRegion);
+                const titleText = (art.title[currentLang] || art.title.en).toLowerCase();
+                const summaryText = (art.summary[currentLang] || art.summary.en).toLowerCase();
+                const matchesSearch = titleText.includes(searchVal) || summaryText.includes(searchVal);
+                return matchesCat && matchesReg && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-16 bg-slate-900/40 border border-slate-800 rounded-3xl">
+                        <i class="fa-solid fa-newspaper text-slate-600 text-4xl mb-3"></i>
+                        <p class="text-sm font-bold text-slate-300">No intelligence stories found</p>
+                        <p class="text-xs text-slate-500 mt-1">Try resetting your search query or selecting another category.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(art => {
+                const isBookmarked = bookmarks.has(art.id);
+                return `
+                    <article class="article-card bg-slate-900/80 border border-slate-800/80 rounded-3xl p-5 sm:p-7 space-y-4 shadow-xl">
+                        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 pb-3.5">
+                            <div class="flex items-center space-x-2">
+                                <span class="bg-sky-500/10 text-sky-400 border border-sky-500/20 text-[10px] uppercase font-mono font-bold px-2.5 py-0.5 rounded-full">${art.category}</span>
+                                <span class="text-slate-400 text-xs font-semibold">• ${art.source}</span>
+                            </div>
+                            <div class="flex items-center space-x-3 text-xs">
+                                <span class="text-emerald-400 font-mono text-[11px] font-bold"><i class="fa-solid fa-shield-check mr-1"></i>Fact-Check ${art.factCheckScore}</span>
+                                <span class="text-slate-500 font-mono text-[11px]">${art.timestamp}</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <h2 class="text-base sm:text-lg font-bold text-white tracking-tight leading-snug">${art.title[currentLang] || art.title.en}</h2>
+                            <p class="text-xs text-slate-300 leading-relaxed">${art.summary[currentLang] || art.summary.en}</p>
+                        </div>
+
+                        <!-- AI Key Highlights Box -->
+                        <div class="bg-slate-950/80 border border-slate-800/80 rounded-2xl p-4 space-y-2 text-xs">
+                            <span class="text-amber-400 font-mono text-[10px] uppercase font-bold tracking-wider flex items-center space-x-1.5">
+                                <i class="fa-solid fa-sparkles"></i>
+                                <span>AI Key Developments</span>
+                            </span>
+                            <ul class="space-y-1.5 text-slate-400 list-disc list-inside text-[11px]">
+                                ${art.keyPoints.map(kp => `<li>${kp}</li>`).join('')}
+                            </ul>
+                        </div>
+
+                        <!-- Article Actions & Metadata -->
+                        <div class="flex items-center justify-between pt-1 text-xs">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-slate-500 text-[11px]">Sentiment: <strong class="text-slate-300 font-semibold">${art.sentiment}</strong></span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="toggleBookmark('${art.id}')" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
+                                    <i class="fa-${isBookmarked ? 'solid' : 'regular'} fa-bookmark ${isBookmarked ? 'text-sky-400' : ''}"></i>
+                                </button>
+                                <button onclick="shareArticle('${art.id}')" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
+                                    <i class="fa-solid fa-share-nodes"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        function handleSearch() {
+            renderArticles();
+        }
+
+        function searchTag(tag) {
+            document.getElementById('news-search-input').value = tag;
+            renderArticles();
+        }
+
+        function shareArticle(artId) {
+            const art = newsDatabase.find(a => a.id === artId);
+            const title = art ? (art.title[currentLang] || art.title.en) : 'WarbaahinAI Intelligence';
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(window.location.href);
+            }
+            alert(`Link copied to clipboard for: "${title}"`);
+        }
+
+        function openBriefingModal() {
+            document.getElementById('briefing-date').innerText = `Executive Digest • ${new Date().toLocaleDateString()}`;
+            document.getElementById('briefing-modal').classList.remove('hidden');
+        }
+
+        function closeBriefingModal() {
+            document.getElementById('briefing-modal').classList.add('hidden');
+        }
+
+        // Initialize App Feed
+        window.onload = function() {
+            renderArticles();
+        };
+    </script>
+</body>
+</html>
